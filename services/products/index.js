@@ -9,7 +9,7 @@ const typeDefs = gql`
   type Product @key(fields: "upc") {
     upc: String!
     name: String
-    price: String
+    price: Int
     weight: Int
   }
 `;

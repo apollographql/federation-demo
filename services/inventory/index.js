@@ -5,7 +5,7 @@ const typeDefs = gql`
   extend type Product @key(fields: "upc") {
     upc: String! @external
     weight: Int @external
-    price: String @external
+    price: Int @external
     inStock: Boolean
     shippingEstimate: Int @requires(fields: "price weight")
   }
@@ -21,7 +21,7 @@ const resolvers = {
     },
     shippingEstimate(object) {
       // free for expensive items
-      if (Number(object.price) > 1000) return 0;
+      if (object.price > 1000) return 0;
       // estimate is based on weight
       return object.weight * 0.5;
     }
