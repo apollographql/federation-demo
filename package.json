@@ -3,6 +3,7 @@
   "main": "gateway.js",
   "scripts": {
     "start-gateway": "nodemon gateway.js",
+    "start-gateway-federated": "ENGINE_API_KEY=<your:key:here> ENGINE_SCHEMA_TAG=local nodemon gateway.js",
     "start-service-accounts": "nodemon services/accounts/index.js",
     "start-service-reviews": "nodemon services/reviews/index.js",
     "start-service-products": "nodemon services/products/index.js",
@@ -13,11 +14,12 @@
   "devDependencies": {
     "lerna": "latest",
     "nodemon": "latest",
-    "concurrently": "latest"
+    "concurrently": "latest",
+    "apollo": "latest"
   },
   "dependencies": {
     "@apollo/gateway": "latest",
-    "apollo-server": "^2.5.1-alpha.1",
+    "apollo-server": "latest",
     "graphql": "latest"
   }
 }
