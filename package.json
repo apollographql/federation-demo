@@ -13,7 +13,8 @@
   "devDependencies": {
     "lerna": "latest",
     "nodemon": "latest",
-    "concurrently": "latest"
+    "concurrently": "latest",
+    "apollo": "latest"
   },
   "dependencies": {
     "@apollo/gateway": "latest",
