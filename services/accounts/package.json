@@ -3,9 +3,11 @@
     "@apollo/federation": "^0.10.0",
     "apollo-server": "^2.9.4",
     "graphql": "^14.5.8",
+    "neo4j-driver": "^1.7.6",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
+    "@types/uuid": "^3.4.5",
     "typescript": "^3.6.3"
   },
   "name": "accounts",

@@ -4,9 +4,22 @@ services:
   accounts:
     build:
       context: services/accounts
+    depends_on:
+      - accounts-neo4j
     entrypoint: ./entrypoint.sh
     environment:
+      - NEO4J_HOST=bolt://accounts-neo4j:7687
+      - NEO4J_PASSWORD=accounts
+      - NEO4J_USER=neo4j
       - PORT=4000
+
+  accounts-neo4j:
+    environment:
+      - "NEO4J_AUTH=neo4j/accounts"
+    image: neo4j:3.5
+    ports:
+      - "7474:7474"
+      - "7687:7687"
 
   gateway:
     depends_on:

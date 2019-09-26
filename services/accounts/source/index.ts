@@ -1,6 +1,6 @@
 import { buildFederatedSchema } from "@apollo/federation";
 import { ApolloServer, gql } from "apollo-server";
-import uuid from "uuid/v4";
+import { createUser, getUser, getUsers } from "./neo4j";
 
 const typeDefs = gql`
   extend type Query {
@@ -8,7 +8,7 @@ const typeDefs = gql`
   }
 
   extend type Mutation {
-    createUser(name: String!, username: String!): User
+    createUser(name: String!, username: String!): User!
   }
 
   type User @key(fields: "id") {
@@ -20,24 +20,19 @@ const typeDefs = gql`
 
 const resolvers = {
   Mutation: {
-    createUser(_, { name, username }) {
-      const newUser = {
-        id: uuid(),
-        name,
-        username
-      }
-      users.push(newUser)
-      return newUser
+    async createUser(_, { name, username }) {
+      return createUser({ name, username })
     }
   },
   Query: {
-    me() {
+    async me() {
+      const users = await getUsers()
       return users[0];
     }
   },
   User: {
-    __resolveReference(object) {
-      return users.find(user => user.id === object.id);
+    async __resolveReference(object) {
+      return getUser(object.id);
     }
   }
 };
@@ -45,8 +40,8 @@ const resolvers = {
 const server = new ApolloServer({
   schema: buildFederatedSchema([
     {
-      typeDefs,
-      resolvers
+      resolvers,
+      typeDefs
     }
   ])
 });
@@ -54,16 +49,3 @@ const server = new ApolloServer({
 server.listen({ port: process.env.PORT }).then(({ url }) => {
   console.log(`🚀 Server ready at ${url}`);
 });
-
-const users = [
-  {
-    id: "1",
-    name: "Ada Lovelace",
-    username: "@ada"
-  },
-  {
-    id: "2",
-    name: "Alan Turing",
-    username: "@complete"
-  }
-];
