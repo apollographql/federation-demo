@@ -1,11 +1,12 @@
 {
-  "name": "inventory",
-  "scripts": {
-    "start": "node index.js"
-  },
   "dependencies": {
     "@apollo/federation": "latest",
     "apollo-server": "latest",
     "graphql": "latest"
+  },
+  "name": "inventory",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
   }
 }

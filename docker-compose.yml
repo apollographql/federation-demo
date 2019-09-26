@@ -1,0 +1,54 @@
+version: "3.7"
+
+services:
+  accounts:
+    entrypoint: ./entrypoint.sh
+    environment:
+      - PORT=4000
+    image: node:10-alpine
+    volumes:
+      - ./services/accounts:/accounts
+    working_dir: /accounts
+
+  gateway:
+    depends_on:
+      - accounts
+      - inventory
+      - products
+      - reviews
+    entrypoint: ./entrypoint.sh
+    environment:
+      - PORT=4000
+    image: node:10-alpine
+    ports:
+      - 4000:4000
+    volumes:
+      - ./services/gateway:/gateway
+    working_dir: /gateway
+
+  inventory:
+    entrypoint: ./entrypoint.sh
+    environment:
+      - PORT=4000
+    image: node:10-alpine
+    volumes:
+      - ./services/inventory:/inventory
+    working_dir: /inventory
+
+  products:
+    entrypoint: ./entrypoint.sh
+    environment:
+      - PORT=4000
+    image: node:10-alpine
+    volumes:
+      - ./services/products:/products
+    working_dir: /products
+
+  reviews:
+    entrypoint: ./entrypoint.sh
+    environment:
+      - PORT=4000
+    image: node:10-alpine
+    volumes:
+      - ./services/reviews:/reviews
+    working_dir: /reviews

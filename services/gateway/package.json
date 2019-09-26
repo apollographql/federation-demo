@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@apollo/gateway": "latest",
+    "apollo-server": "latest",
+    "graphql": "latest"
+  },
+  "name": "gateway",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
+  }
+}

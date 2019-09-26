@@ -1,11 +1,12 @@
 {
-  "name": "products",
-  "scripts": {
-    "start": "node index.js"
-  },
   "dependencies": {
     "@apollo/federation": "latest",
     "apollo-server": "latest",
     "graphql": "latest"
+  },
+  "name": "products",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
   }
 }
