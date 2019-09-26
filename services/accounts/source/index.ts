@@ -1,9 +1,14 @@
 import { buildFederatedSchema } from "@apollo/federation";
 import { ApolloServer, gql } from "apollo-server";
+import uuid from "uuid/v4";
 
 const typeDefs = gql`
   extend type Query {
     me: User
+  }
+
+  extend type Mutation {
+    createUser(name: String!, username: String!): User
   }
 
   type User @key(fields: "id") {
@@ -14,6 +19,17 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
+  Mutation: {
+    createUser(_, { name, username }) {
+      const newUser = {
+        id: uuid(),
+        name,
+        username
+      }
+      users.push(newUser)
+      return newUser
+    }
+  },
   Query: {
     me() {
       return users[0];
@@ -43,13 +59,11 @@ const users = [
   {
     id: "1",
     name: "Ada Lovelace",
-    birthDate: "1815-12-10",
     username: "@ada"
   },
   {
     id: "2",
     name: "Alan Turing",
-    birthDate: "1912-06-23",
     username: "@complete"
   }
 ];

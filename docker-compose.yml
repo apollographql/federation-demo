@@ -2,13 +2,11 @@ version: "3.7"
 
 services:
   accounts:
+    build:
+      context: services/accounts
     entrypoint: ./entrypoint.sh
     environment:
       - PORT=4000
-    image: node:10-alpine
-    volumes:
-      - ./services/accounts:/accounts
-    working_dir: /accounts
 
   gateway:
     depends_on:
