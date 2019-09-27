@@ -1,43 +1,54 @@
 import { buildFederatedSchema } from "@apollo/federation";
 import { ApolloServer, gql } from "apollo-server";
-import { createUser, getUser, getUsers } from "./neo4j";
+import { createUser, getUserByID } from "./neo4j";
+import { createToken } from "./tokens";
+
+const NODE_ENV = process.env.NODE_ENV || "development";
+const USER_ID_HEADER = "user-id";
 
 const typeDefs = gql`
   extend type Query {
+    createToken(email: String!, password: String!): String!
     me: User
   }
 
   extend type Mutation {
-    createUser(name: String!, username: String!): User!
+    createUser(name: String!, email: String!, password: String!): User!
   }
 
   type User @key(fields: "id") {
+    email: String!
     id: ID!
-    name: String
-    username: String
+    name: String!
   }
 `;
 
 const resolvers = {
   Mutation: {
-    async createUser(_, { name, username }) {
-      return createUser({ name, username })
+    async createUser(_, { email, name, password }) {
+      return createUser({ email, name, password });
     }
   },
   Query: {
-    async me() {
-      const users = await getUsers()
-      return users[0];
+    async createToken(_, { email, password }) {
+      return createToken({ email, password });
+    },
+    async me(_, { }, context) {
+      return getUserByID(context.userID);
     }
   },
   User: {
     async __resolveReference(object) {
-      return getUser(object.id);
+      return getUserByID(object.id);
     }
   }
 };
 
 const server = new ApolloServer({
+  context: request => ({
+    userID: request.req.headers[USER_ID_HEADER]
+  }),
+  debug: NODE_ENV !== "production",
   schema: buildFederatedSchema([
     {
       resolvers,

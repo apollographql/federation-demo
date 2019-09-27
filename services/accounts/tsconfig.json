@@ -2,6 +2,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "outDir": "build",
-    "rootDir": "source"
+    "rootDir": "source",
+    "strictNullChecks": true
   }
 }

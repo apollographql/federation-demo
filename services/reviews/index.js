@@ -3,21 +3,21 @@ const { buildFederatedSchema } = require("@apollo/federation");
 
 const typeDefs = gql`
   type Review @key(fields: "id") {
-    id: ID!
+    author: User @provides(fields: "email")
     body: String
-    author: User @provides(fields: "username")
+    id: ID!
     product: Product
   }
 
   extend type User @key(fields: "id") {
+    email: String! @external
     id: ID! @external
-    username: String @external
     reviews: [Review]
   }
 
   extend type Product @key(fields: "upc") {
-    upc: String! @external
     reviews: [Review]
+    upc: String! @external
   }
 `;
 

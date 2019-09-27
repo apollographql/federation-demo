@@ -8,6 +8,7 @@ services:
       - accounts-neo4j
     entrypoint: ./entrypoint.sh
     environment:
+      - JWT_SECRET=secret
       - NEO4J_HOST=bolt://accounts-neo4j:7687
       - NEO4J_PASSWORD=accounts
       - NEO4J_USER=neo4j
@@ -29,6 +30,7 @@ services:
       - reviews
     entrypoint: ./entrypoint.sh
     environment:
+      - JWT_SECRET=secret
       - PORT=4000
     image: node:10-alpine
     ports:
