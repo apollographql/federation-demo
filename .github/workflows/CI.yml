@@ -19,6 +19,7 @@ jobs:
           cd tests/acceptance
           npm install
           docker run \
+            --cap-add=SYS_ADMIN \
             --env GATEWAY_HOST=http://gateway:4000 \
             --env WEB_APP_HOST=http://web-app \
             --network=federation-demo_default \

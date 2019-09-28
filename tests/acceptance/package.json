@@ -4,12 +4,11 @@
     "faker": "^4.1.0",
     "graphql-request": "^1.8.2",
     "jest": "^24.9.0",
+    "jest-puppeteer": "^4.3.0",
     "puppeteer": "^1.20.0"
   },
   "jest": {
-    "setupFilesAfterEnv": [
-      "expect-puppeteer"
-    ]
+    "preset": "jest-puppeteer"
   },
   "name": "acceptance",
   "private": true,
