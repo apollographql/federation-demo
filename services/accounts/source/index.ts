@@ -8,11 +8,11 @@ const USER_ID_HEADER = "user-id";
 
 const typeDefs = gql`
   extend type Query {
-    createToken(email: String!, password: String!): String!
     me: User
   }
 
   extend type Mutation {
+    createToken(email: String!, password: String!): String!
     createUser(name: String!, email: String!, password: String!): User!
   }
 
@@ -25,15 +25,15 @@ const typeDefs = gql`
 
 const resolvers = {
   Mutation: {
+    async createToken(_, { email, password }) {
+      return createToken({ email, password });
+    },
     async createUser(_, { email, name, password }) {
       return createUser({ email, name, password });
     }
   },
   Query: {
-    async createToken(_, { email, password }) {
-      return createToken({ email, password });
-    },
-    async me(_, { }, context) {
+    async me(_, {}, context) {
       return getUserByID(context.userID);
     }
   },

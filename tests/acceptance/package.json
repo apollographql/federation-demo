@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "faker": "^4.1.0",
+    "graphql-request": "^1.8.2",
+    "jest": "^24.9.0"
+  },
+  "name": "acceptance",
+  "private": true,
+  "scripts": {
+    "test": "jest"
+  }
+}
