@@ -1,5 +1,6 @@
 const faker = require("faker");
 const { createUser } = require("./gateway");
+const { newPage } = require("./utilities/browser");
 
 const WEB_APP_HOST = process.env.WEB_APP_HOST || "http://localhost:3000";
 
@@ -20,7 +21,10 @@ describe("with valid user credentials", () => {
   });
 
   describe("when navigating to the login page", () => {
+    let page;
+
     beforeEach(async () => {
+      page = await newPage();
       await page.goto(`${WEB_APP_HOST}/#/login`);
     });
 
