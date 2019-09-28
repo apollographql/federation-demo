@@ -1,0 +1,18 @@
+name: CI
+
+on: [push]
+
+jobs:
+  acceptance:
+    name: Acceptance Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Start services
+      run: |
+        docker-compose up -d
+    - name: Run acceptance tests
+      run: |
+        cd tests/acceptance
+        npm install
+        npm test
