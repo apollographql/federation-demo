@@ -17,7 +17,8 @@ jobs:
           npm install
           docker run \
             --env GATEWAY_HOST=http://gateway:4000 \
+            --env WEB_APP_HOST=http://web-app \
             --network=federation-demo_default \
-            --volume $(pwd):/acceptance \
-            --workdir=/acceptance \
-            node:10 npm test
+            --volume $(pwd):/app \
+            --workdir=/app \
+            davidchristie/puppeteer npm test

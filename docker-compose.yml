@@ -65,3 +65,13 @@ services:
     volumes:
       - ./services/reviews:/reviews
     working_dir: /reviews
+
+  web-app:
+    build:
+      args:
+        - GATEWAY_HOST=http://gateway
+      context: services/web-app
+    depends_on:
+      - gateway
+    ports:
+      - 3000:80

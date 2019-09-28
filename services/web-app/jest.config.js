@@ -1,5 +1,3 @@
-const path = require("path");
-
 module.exports = {
-  setupFiles: ["<rootDir>/src/test/configureEnzyme.js"]
+  setupFiles: ["<rootDir>/source/test/configureEnzyme.js"]
 };
