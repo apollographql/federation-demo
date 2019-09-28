@@ -13,6 +13,6 @@
   "name": "acceptance",
   "private": true,
   "scripts": {
-    "test": "jest"
+    "test": "jest --runInBand"
   }
 }
