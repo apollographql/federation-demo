@@ -15,12 +15,12 @@ const CREATE_USER_MUTATION = `
     }
   }
 `;
-const GATEWAY_URL = "http://localhost:4000/graphql";
+const GATEWAY_HOST = process.env.GATEWAY_HOST || "http://localhost:4000";
 const JWT_REGEX = "^[A-Za-z0-9-_=]+.[A-Za-z0-9-_=]+.?[A-Za-z0-9-_.+/=]*$";
 const UUID_REGEX =
   "([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}";
 
-const client = new GraphQLClient(GATEWAY_URL);
+const client = new GraphQLClient(`${GATEWAY_HOST}/graphql`);
 
 describe("creating a new user", () => {
   let name;

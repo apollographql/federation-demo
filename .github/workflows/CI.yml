@@ -7,12 +7,17 @@ jobs:
     name: Acceptance Tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Start services
-      run: |
-        docker-compose up -d
-    - name: Run acceptance tests
-      run: |
-        cd tests/acceptance
-        npm install
-        npm test
+      - uses: actions/checkout@v1
+      - name: Start services
+        run: |
+          docker-compose up -d
+      - name: Run acceptance tests
+        run: |
+          cd tests/acceptance
+          npm install
+          docker run \
+            --env GATEWAY_HOST=http://gateway:4000 \
+            --network=federation-demo_default \
+            --volume $(pwd):/acceptance \
+            --workdir=/acceptance \
+            node:10 npm test
