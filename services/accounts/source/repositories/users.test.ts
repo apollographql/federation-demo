@@ -1,7 +1,13 @@
 import faker from "faker";
 import { Driver } from "neo4j-driver/types/v1";
 import { User } from "../types";
-import { createUser, deleteUser, getUserByEmail, getUserByID } from "./users";
+import {
+  createUser,
+  deleteUser,
+  getUserByEmail,
+  getUserByID,
+  getUsers
+} from "./users";
 
 let driver: Driver;
 
@@ -69,49 +75,142 @@ describe("deleteUser function", () => {
 });
 
 describe("getUserByEmail function", () => {
-  let email: string;
-  let user: User | null;
-  let session: any;
+  describe("when user exists", () => {
+    let email: string;
+    let user: User | null;
+    let session: any;
 
-  beforeEach(async () => {
-    email = faker.internet.email();
-    session = {
-      close: jest.fn(),
-      run: jest.fn()
-    };
-    (driver.session as any).mockReturnValueOnce(session);
-    (session.run as any).mockReturnValueOnce({
-      records: [
-        {
-          get: () => ({
-            properties: {
-              email
-            }
-          })
-        }
-      ]
+    beforeEach(async () => {
+      email = faker.internet.email();
+      session = {
+        close: jest.fn(),
+        run: jest.fn()
+      };
+      (driver.session as any).mockReturnValueOnce(session);
+      (session.run as any).mockReturnValueOnce({
+        records: [
+          {
+            get: () => ({
+              properties: {
+                email
+              }
+            })
+          }
+        ]
+      });
+      user = await getUserByEmail(email);
     });
-    user = await getUserByEmail(email);
+
+    it("returns the specified user", () => {
+      expect(user).toMatchObject({
+        email
+      });
+    });
+
+    it("closes the session", () => {
+      expect(session.close).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it("returns the specified user", () => {
-    expect(user).toMatchObject({
-      email
-    });
-  });
+  describe("when user does not exist", () => {
+    let email: string;
+    let user: User | null;
+    let session: any;
 
-  it("closes the session", () => {
-    expect(session.close).toHaveBeenCalledTimes(1);
+    beforeEach(async () => {
+      email = faker.internet.email();
+      session = {
+        close: jest.fn(),
+        run: jest.fn()
+      };
+      (driver.session as any).mockReturnValueOnce(session);
+      (session.run as any).mockReturnValueOnce({
+        records: []
+      });
+      user = await getUserByEmail(email);
+    });
+
+    it("returns the specified user", () => {
+      expect(user).toBeNull();
+    });
+
+    it("closes the session", () => {
+      expect(session.close).toHaveBeenCalledTimes(1);
+    });
   });
 });
 
 describe("getUserByID function", () => {
-  let id: string;
-  let user: User | null;
+  describe("when user exists", () => {
+    let id: string;
+    let user: User | null;
+    let session: any;
+
+    beforeEach(async () => {
+      id = faker.random.uuid();
+      session = {
+        close: jest.fn(),
+        run: jest.fn()
+      };
+      (driver.session as any).mockReturnValueOnce(session);
+      (session.run as any).mockReturnValueOnce({
+        records: [
+          {
+            get: () => ({
+              properties: {
+                id
+              }
+            })
+          }
+        ]
+      });
+      user = await getUserByID(id);
+    });
+
+    it("returns the specified user", () => {
+      expect(user).toMatchObject({
+        id
+      });
+    });
+
+    it("closes the session", () => {
+      expect(session.close).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("when user does not exist", () => {
+    let id: string;
+    let user: User | null;
+    let session: any;
+
+    beforeEach(async () => {
+      id = faker.random.uuid();
+      session = {
+        close: jest.fn(),
+        run: jest.fn()
+      };
+      (driver.session as any).mockReturnValueOnce(session);
+      (session.run as any).mockReturnValueOnce({
+        records: []
+      });
+      user = await getUserByID(id);
+    });
+
+    it("returns null", () => {
+      expect(user).toBeNull();
+    });
+
+    it("closes the session", () => {
+      expect(session.close).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+describe("getUsers function", () => {
+  let users: User[];
   let session: any;
 
   beforeEach(async () => {
-    id = faker.random.uuid();
     session = {
       close: jest.fn(),
       run: jest.fn()
@@ -122,19 +221,41 @@ describe("getUserByID function", () => {
         {
           get: () => ({
             properties: {
-              id
+              id: faker.random.uuid()
+            }
+          })
+        },
+        {
+          get: () => ({
+            properties: {
+              id: faker.random.uuid()
+            }
+          })
+        },
+        {
+          get: () => ({
+            properties: {
+              id: faker.random.uuid()
             }
           })
         }
       ]
     });
-    user = await getUserByID(id);
+    users = await getUsers();
   });
 
-  it("returns the specified user", () => {
-    expect(user).toMatchObject({
-      id
-    });
+  it("returns a list of users", () => {
+    expect(users).toEqual([
+      {
+        id: expect.any(String)
+      },
+      {
+        id: expect.any(String)
+      },
+      {
+        id: expect.any(String)
+      }
+    ]);
   });
 
   it("closes the session", () => {
