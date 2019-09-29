@@ -3,7 +3,7 @@ name: CI
 on: [push]
 
 jobs:
-  acceptance:
+  acceptance-tests:
     name: Acceptance Tests
     runs-on: ubuntu-latest
     steps:
@@ -16,3 +16,18 @@ jobs:
           cd tests/acceptance
           npm install
           npm test
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: [services/accounts]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Go to directory
+        run: cd ${{ matrix.directory }}
+      - name: Install dependencies
+        run: npm install
+      - name: Run unit tests
+        run: npm test
