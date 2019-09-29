@@ -1,6 +1,6 @@
 import faker from "faker";
 import { User } from "../types";
-import { createUser } from "./users";
+import { createUser, deleteUser } from "./users";
 import { Driver } from "neo4j-driver/types/v1";
 
 let driver: Driver;
@@ -43,6 +43,24 @@ describe("createUser function", () => {
       name,
       password: expect.any(String)
     });
+  });
+
+  it("closes the session", () => {
+    expect(session.close).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("deleteUser function", () => {
+  let session: any;
+
+  beforeEach(async () => {
+    const id = faker.random.uuid();
+    session = {
+      close: jest.fn(),
+      run: jest.fn()
+    };
+    (driver.session as any).mockReturnValueOnce(session);
+    await deleteUser({ id });
   });
 
   it("closes the session", () => {
