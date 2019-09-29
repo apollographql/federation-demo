@@ -25,9 +25,9 @@ jobs:
         directory: [services/accounts]
     steps:
       - uses: actions/checkout@v1
-      - name: Go to directory
-        run: cd ${{ matrix.directory }}
       - name: Install dependencies
         run: npm install
+        working-directory: ${{ matrix.directory }}
       - name: Run unit tests
         run: npm test
+        working-directory: ${{ matrix.directory }}
