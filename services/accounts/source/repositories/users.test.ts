@@ -1,7 +1,7 @@
 import faker from "faker";
-import { User } from "../types";
-import { createUser, deleteUser } from "./users";
 import { Driver } from "neo4j-driver/types/v1";
+import { User } from "../types";
+import { createUser, deleteUser, getUserByEmail } from "./users";
 
 let driver: Driver;
 
@@ -61,6 +61,43 @@ describe("deleteUser function", () => {
     };
     (driver.session as any).mockReturnValueOnce(session);
     await deleteUser({ id });
+  });
+
+  it("closes the session", () => {
+    expect(session.close).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("getUserByEmail function", () => {
+  let email: string;
+  let user: User | null;
+  let session: any;
+
+  beforeEach(async () => {
+    email = faker.internet.email();
+    session = {
+      close: jest.fn(),
+      run: jest.fn()
+    };
+    (driver.session as any).mockReturnValueOnce(session);
+    (session.run as any).mockReturnValueOnce({
+      records: [
+        {
+          get: () => ({
+            properties: {
+              email
+            }
+          })
+        }
+      ]
+    });
+    user = await getUserByEmail(email);
+  });
+
+  it("returns the specified user", () => {
+    expect(user).toMatchObject({
+      email
+    });
   });
 
   it("closes the session", () => {
