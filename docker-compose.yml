@@ -69,7 +69,7 @@ services:
   web-app:
     build:
       args:
-        - GATEWAY_HOST=http://gateway
+        - GATEWAY_HOST=http://localhost:4000
       context: services/web-app
     depends_on:
       - gateway

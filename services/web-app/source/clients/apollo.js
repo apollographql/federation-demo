@@ -1,6 +1,8 @@
 import ApolloClient from "apollo-boost";
 import { TOKEN_LOCAL_STORAGE_KEY } from "../authProvider";
 
+const GATEWAY_HOST = process.env.GATEWAY_HOST || "http://localhost:4000";
+
 const client = new ApolloClient({
   request: operation => {
     operation.setContext({
@@ -9,7 +11,7 @@ const client = new ApolloClient({
       }
     });
   },
-  uri: "http://localhost:4000"
+  uri: `${GATEWAY_HOST}/graphql`
 });
 
 export default client;
