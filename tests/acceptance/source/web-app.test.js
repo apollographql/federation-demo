@@ -21,7 +21,7 @@ describe("with valid user credentials", () => {
 
   describe("when navigating to the login page", () => {
     beforeEach(async () => {
-      await page.goto(`${WEB_APP_HOST}/login`);
+      await page.goto(`${WEB_APP_HOST}/#/login`);
     });
 
     describe("when form is submitted", () => {
