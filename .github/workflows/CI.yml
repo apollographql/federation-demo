@@ -8,9 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Build puppeteer docker image
-        run: |
-          docker build --tag puppeteer images/puppeteer
       - name: Start services
         run: |
           docker-compose up -d
@@ -19,11 +16,3 @@ jobs:
           cd tests/acceptance
           npm install
           npm test
-          # docker run \
-          #   --cap-add=SYS_ADMIN \
-          #   --env GATEWAY_HOST=http://gateway:4000 \
-          #   --env WEB_APP_HOST=http://web-app \
-          #   --network=federation-demo_default \
-          #   --volume $(pwd):/app \
-          #   --workdir=/app \
-          #   puppeteer npm test
