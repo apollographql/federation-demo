@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import { getUserByEmail } from "./neo4j";
 import { checkPassword } from "./passwords";
+import { getUserByEmail } from "./repositories/users";
 
 export const createToken = async ({ email, password }) => {
   const { JWT_SECRET = "secret" } = process.env;

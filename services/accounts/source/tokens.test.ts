@@ -1,11 +1,11 @@
 import faker from "faker";
-import { getUserByEmail } from "./neo4j";
 import jwt from "jsonwebtoken";
 import { hashPassword } from "./passwords";
+import { getUserByEmail } from "./repositories/users";
 import { createToken } from "./tokens";
 import { generateIncorrectPassword } from "./utilities/testing";
 
-jest.mock("./neo4j", () => ({
+jest.mock("./repositories/users", () => ({
   getUserByEmail: jest.fn()
 }));
 
