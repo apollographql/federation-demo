@@ -10,14 +10,22 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/jest": "^24.0.18",
     "@types/jsonwebtoken": "^8.3.4",
     "@types/uuid": "^3.4.5",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
     "typescript": "^3.6.3"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   },
   "name": "accounts",
   "private": true,
   "scripts": {
     "build": "tsc",
-    "start": "node build/index.js"
+    "start": "node build/index.js",
+    "test": "jest"
   }
 }
