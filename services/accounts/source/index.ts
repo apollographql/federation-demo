@@ -1,6 +1,6 @@
 import { buildFederatedSchema } from "@apollo/federation";
 import { ApolloServer, gql } from "apollo-server";
-import { createUser, getUserByID } from "./neo4j";
+import { createUser, getUserByID } from "./repositories/users";
 import { createToken } from "./tokens";
 
 const NODE_ENV = process.env.NODE_ENV || "development";
