@@ -1,10 +1,10 @@
 import { buildFederatedSchema } from "@apollo/federation";
 import { ApolloServer, gql } from "apollo-server";
+import context from "./context";
 import { createUser, getUserByID } from "./repositories/users";
 import { createToken } from "./tokens";
 
 const NODE_ENV = process.env.NODE_ENV || "development";
-const USER_ID_HEADER = "user-id";
 
 const typeDefs = gql`
   extend type Query {
@@ -45,9 +45,7 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
-  context: request => ({
-    userID: request.req.headers[USER_ID_HEADER]
-  }),
+  context,
   debug: NODE_ENV !== "production",
   schema: buildFederatedSchema([
     {
