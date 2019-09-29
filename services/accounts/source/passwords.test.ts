@@ -1,5 +1,5 @@
-import faker from "faker";
 import { hashPassword, checkPassword } from "./passwords";
+import { generateIncorrectPassword } from "./utilities/testing";
 
 const passwords = [
   {
@@ -18,15 +18,6 @@ const passwords = [
       "$2a$10$6Cm4AIfsLNYd8E90XU656OwspBu09kiuLP0fds.eUwwTRU4KC2D2e"
   }
 ];
-
-const generateIncorrectPassword = (correctPassword: string) => {
-  const randomPassword = faker.internet.password();
-  if (randomPassword === correctPassword) {
-    return generateIncorrectPassword(correctPassword);
-  } else {
-    return randomPassword;
-  }
-};
 
 describe("checkPassword function", () => {
   passwords.forEach(({ originalPassword, hashedPassword }) => {

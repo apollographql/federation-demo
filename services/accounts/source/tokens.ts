@@ -1,10 +1,9 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import { getUserByEmail } from "./neo4j";
 import { checkPassword } from "./passwords";
 
-const JWT_SECRET = process.env.JWT_SECRET || "secret";
-
 export const createToken = async ({ email, password }) => {
+  const { JWT_SECRET = "secret" } = process.env;
   const user = await getUserByEmail(email);
   if (user) {
     const isCorrectPassword = await checkPassword(password, user.password);
@@ -13,4 +12,4 @@ export const createToken = async ({ email, password }) => {
     }
   }
   throw new Error("Invalid email or password.");
-}
+};

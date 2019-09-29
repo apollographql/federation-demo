@@ -20,6 +20,9 @@
     "typescript": "^3.6.3"
   },
   "jest": {
+    "collectCoverageFrom": [
+      "source/**/*.{js,ts}"
+    ],
     "preset": "ts-jest",
     "testEnvironment": "node"
   },
