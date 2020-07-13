@@ -11,6 +11,16 @@ const typeDefs = gql`
     name: String
     username: String
   }
+
+  extend type Product @key(fields: "upc") {
+    upc: String! @external
+  }
+
+  extend type Review @key(fields: "id") @key(fields: "author { id } product { upc }" ) {
+    id: ID! @external
+    author: User @external
+    product: Product @external
+  }
 `;
 
 const resolvers = {

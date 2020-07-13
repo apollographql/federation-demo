@@ -2,7 +2,7 @@ const { ApolloServer, gql } = require("apollo-server");
 const { buildFederatedSchema } = require("@apollo/federation");
 
 const typeDefs = gql`
-  type Review @key(fields: "id") {
+  type Review @key(fields: "id") @key(fields: "author { id } product { upc }" ) {
     id: ID!
     body: String
     author: User @provides(fields: "username")
