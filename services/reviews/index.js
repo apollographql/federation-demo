@@ -1,6 +1,8 @@
 const { ApolloServer, gql } = require("apollo-server");
 const { buildFederatedSchema } = require("@apollo/federation");
 
+var counter = 0;
+
 const typeDefs = gql`
   type Review @key(fields: "id") {
     id: ID!
@@ -18,6 +20,10 @@ const typeDefs = gql`
   extend type Product @key(fields: "upc") {
     upc: String! @external
     reviews: [Review]
+    weight: Int @external
+    price: Int @external
+    inStock: Boolean
+    shippingEstimate: Int @requires(fields: "price weight")
   }
 `;
 
@@ -40,8 +46,24 @@ const resolvers = {
     }
   },
   Product: {
+    __resolverReference(object) {
+      return {
+        ...object,
+        ...inventory.find(product => product.upc === object.upc)
+      }
+    },
     reviews(product) {
       return reviews.filter(review => review.product.upc === product.upc);
+    },
+    shippingEstimate(object) {
+      // free for expense items
+      if (object.price > 1000) return 0;
+      // estimate is based on weight
+      return object.weight * 0.5;
+    },
+    inStock(object) {
+      const found = inventory.find(product => product.upc === object.upc)
+      return found? found.inStock : null;
     }
   }
 };
@@ -52,7 +74,11 @@ const server = new ApolloServer({
       typeDefs,
       resolvers
     }
-  ])
+  ]),
+  formatResponse: (response, requestContext) => {
+    console.log(`Reviews:Sending response - ${counter++}`);
+    // console.log(requestContext);
+  }
 });
 
 server.listen({ port: 4002 }).then(({ url }) => {
@@ -88,4 +114,10 @@ const reviews = [
     product: { upc: "1" },
     body: "Prefer something else."
   }
+];
+
+const inventory = [
+  { upc: "1", inStock: true },
+  { upc: "2", inStock: false },
+  { upc: "3", inStock: true }
 ];
