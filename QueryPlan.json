@@ -470,3 +470,681 @@ RESPONSE
 }"
   }
 }
+
+
+++++++++++++++++++++
+Single field in a different service
+Case 1: Field belonging to different objects
+
+QUERY
+-----
+query {
+  me {
+    __typename
+    id
+    name
+    username
+    reviews {
+      __typename
+      id
+      body
+      author {
+        __typename
+        id
+        name
+        username
+        reviews {
+          __typename
+          id
+          body
+          product {
+            __typename
+            upc
+            name
+            price
+            weight
+            inStock
+          }
+        }
+      }
+      product {
+        __typename
+        upc
+        name
+        inStock
+        shippingEstimate
+        weight
+        price
+        reviews {
+          __typename
+          id
+          body
+          author {
+            __typename
+            id
+            name
+            username
+          }
+        }
+      }
+    }
+  }
+}
+
+RESPONSE
+--------
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "id": "1",
+      "name": "Ada Lovelace",
+      "username": "@ada",
+      "reviews": [
+        {
+          "__typename": "Review",
+          "id": "1",
+          "body": "Love it!",
+          "author": {
+            "__typename": "User",
+            "id": "1",
+            "name": "Ada Lovelace",
+            "username": "@ada",
+            "reviews": [
+              {
+                "__typename": "Review",
+                "id": "1",
+                "body": "Love it!",
+                "product": {
+                  "__typename": "Product",
+                  "upc": "1",
+                  "name": "Table",
+                  "price": 899,
+                  "weight": 100,
+                  "inStock": true
+                }
+              },
+              {
+                "__typename": "Review",
+                "id": "2",
+                "body": "Too expensive.",
+                "product": {
+                  "__typename": "Product",
+                  "upc": "2",
+                  "name": "Couch",
+                  "price": 1299,
+                  "weight": 1000,
+                  "inStock": false
+                }
+              }
+            ]
+          },
+          "product": {
+            "__typename": "Product",
+            "upc": "1",
+            "name": "Table",
+            "inStock": true,
+            "shippingEstimate": 50,
+            "weight": 100,
+            "price": 899,
+            "reviews": [
+              {
+                "__typename": "Review",
+                "id": "1",
+                "body": "Love it!",
+                "author": {
+                  "__typename": "User",
+                  "id": "1",
+                  "name": "Ada Lovelace",
+                  "username": "@ada"
+                }
+              },
+              {
+                "__typename": "Review",
+                "id": "4",
+                "body": "Prefer something else.",
+                "author": {
+                  "__typename": "User",
+                  "id": "2",
+                  "name": "Alan Turing",
+                  "username": "@complete"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Review",
+          "id": "2",
+          "body": "Too expensive.",
+          "author": {
+            "__typename": "User",
+            "id": "1",
+            "name": "Ada Lovelace",
+            "username": "@ada",
+            "reviews": [
+              {
+                "__typename": "Review",
+                "id": "1",
+                "body": "Love it!",
+                "product": {
+                  "__typename": "Product",
+                  "upc": "1",
+                  "name": "Table",
+                  "price": 899,
+                  "weight": 100,
+                  "inStock": true
+                }
+              },
+              {
+                "__typename": "Review",
+                "id": "2",
+                "body": "Too expensive.",
+                "product": {
+                  "__typename": "Product",
+                  "upc": "2",
+                  "name": "Couch",
+                  "price": 1299,
+                  "weight": 1000,
+                  "inStock": false
+                }
+              }
+            ]
+          },
+          "product": {
+            "__typename": "Product",
+            "upc": "2",
+            "name": "Couch",
+            "inStock": false,
+            "shippingEstimate": 0,
+            "weight": 1000,
+            "price": 1299,
+            "reviews": [
+              {
+                "__typename": "Review",
+                "id": "2",
+                "body": "Too expensive.",
+                "author": {
+                  "__typename": "User",
+                  "id": "1",
+                  "name": "Ada Lovelace",
+                  "username": "@ada"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "__queryPlanExperimental": "QueryPlan {\n  Sequence {\n    Fetch(service: \"accounts\") {\n      {\n        me {\n          __typename\n          id\n          name\n          username\n          reviews {\n            __typename\n            id\n            body\n            author {\n              __typename\n              id\n              name\n              username\n              reviews {\n                __typename\n                id\n                body\n                product {\n                  __typename\n                  upc\n                  name\n                  price\n                  weight\n                }\n              }\n            }\n            product {\n              __typename\n              upc\n              name\n              shippingEstimate\n              weight\n              price\n              reviews {\n                __typename\n                id\n                body\n                author {\n                  __typename\n                  id\n                  name\n                  username\n                }\n              }\n            }\n          }\n        }\n      }\n    },\n    Parallel {\n      Flatten(path: \"me.reviews.@.author.reviews.@.product\") {\n        Fetch(service: \"reviews\") {\n          {\n            ... on Product {\n              __typename\n              upc\n            }\n          } =>\n          {\n            ... on Product {\n              inStock\n            }\n          }\n        },\n      },\n      Flatten(path: \"me.reviews.@.product\") {\n        Fetch(service: \"reviews\") {\n          {\n            ... on Product {\n              __typename\n              upc\n            }\n          } =>\n          {\n            ... on Product {\n              inStock\n            }\n          }\n        },\n      },\n    },\n  },\n}"
+  }
+}
+
+QUERY PLAN
+----------
+QueryPlan {
+  Sequence {
+    Fetch(service: "accounts") {
+      {
+        me {
+          __typename
+          id
+          name
+          username
+          reviews {
+            __typename
+            id
+            body
+            author {
+              __typename
+              id
+              name
+              username
+              reviews {
+                __typename
+                id
+                body
+                product {
+                  __typename
+                  upc
+                  name
+                  price
+                  weight
+                }
+              }
+            }
+            product {
+              __typename
+              upc
+              name
+              shippingEstimate
+              weight
+              price
+              reviews {
+                __typename
+                id
+                body
+                author {
+                  __typename
+                  id
+                  name
+                  username
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    Parallel {
+      Flatten(path: "me.reviews.@.author.reviews.@.product") {
+        Fetch(service: "reviews") {
+          {
+            ... on Product {
+              __typename
+              upc
+            }
+          } =>
+          {
+            ... on Product {
+              inStock
+            }
+          }
+        },
+      },
+      Flatten(path: "me.reviews.@.product") {
+        Fetch(service: "reviews") {
+          {
+            ... on Product {
+              __typename
+              upc
+            }
+          } =>
+          {
+            ... on Product {
+              inStock
+            }
+          }
+        },
+      },
+    },
+  },
+}
+
+Case 2: Field beloging to the same object
+
+QUERY
+-----
+query {
+  me {
+    __typename
+    id
+    name
+    username
+    reviews {
+      __typename
+      id
+      body
+      author {
+        __typename
+        id
+        name
+        username
+        reviews {
+          __typename
+          id
+          body
+          product {
+            __typename
+            upc
+            name
+            price
+            weight
+            inStock
+            reviews {
+              id
+              product {
+                upc
+                inStock
+              }
+            }
+          }
+        }
+      }
+      product {
+        __typename
+        upc
+        name
+        inStock
+        shippingEstimate
+        weight
+        price
+        reviews {
+          __typename
+          id
+          body
+          author {
+            __typename
+            id
+            name
+            username
+          }
+        }
+      }
+    }
+  }
+}
+
+RESPONSE
+--------
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "id": "1",
+      "name": "Ada Lovelace",
+      "username": "@ada",
+      "reviews": [
+        {
+          "__typename": "Review",
+          "id": "1",
+          "body": "Love it!",
+          "author": {
+            "__typename": "User",
+            "id": "1",
+            "name": "Ada Lovelace",
+            "username": "@ada",
+            "reviews": [
+              {
+                "__typename": "Review",
+                "id": "1",
+                "body": "Love it!",
+                "product": {
+                  "__typename": "Product",
+                  "upc": "1",
+                  "name": "Table",
+                  "price": 899,
+                  "weight": 100,
+                  "inStock": true,
+                  "reviews": [
+                    {
+                      "id": "1",
+                      "product": {
+                        "upc": "1",
+                        "inStock": true
+                      }
+                    },
+                    {
+                      "id": "4",
+                      "product": {
+                        "upc": "1",
+                        "inStock": true
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "__typename": "Review",
+                "id": "2",
+                "body": "Too expensive.",
+                "product": {
+                  "__typename": "Product",
+                  "upc": "2",
+                  "name": "Couch",
+                  "price": 1299,
+                  "weight": 1000,
+                  "inStock": false,
+                  "reviews": [
+                    {
+                      "id": "2",
+                      "product": {
+                        "upc": "2",
+                        "inStock": false
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "product": {
+            "__typename": "Product",
+            "upc": "1",
+            "name": "Table",
+            "inStock": true,
+            "shippingEstimate": 50,
+            "weight": 100,
+            "price": 899,
+            "reviews": [
+              {
+                "__typename": "Review",
+                "id": "1",
+                "body": "Love it!",
+                "author": {
+                  "__typename": "User",
+                  "id": "1",
+                  "name": "Ada Lovelace",
+                  "username": "@ada"
+                }
+              },
+              {
+                "__typename": "Review",
+                "id": "4",
+                "body": "Prefer something else.",
+                "author": {
+                  "__typename": "User",
+                  "id": "2",
+                  "name": "Alan Turing",
+                  "username": "@complete"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "__typename": "Review",
+          "id": "2",
+          "body": "Too expensive.",
+          "author": {
+            "__typename": "User",
+            "id": "1",
+            "name": "Ada Lovelace",
+            "username": "@ada",
+            "reviews": [
+              {
+                "__typename": "Review",
+                "id": "1",
+                "body": "Love it!",
+                "product": {
+                  "__typename": "Product",
+                  "upc": "1",
+                  "name": "Table",
+                  "price": 899,
+                  "weight": 100,
+                  "inStock": true,
+                  "reviews": [
+                    {
+                      "id": "1",
+                      "product": {
+                        "upc": "1",
+                        "inStock": true
+                      }
+                    },
+                    {
+                      "id": "4",
+                      "product": {
+                        "upc": "1",
+                        "inStock": true
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "__typename": "Review",
+                "id": "2",
+                "body": "Too expensive.",
+                "product": {
+                  "__typename": "Product",
+                  "upc": "2",
+                  "name": "Couch",
+                  "price": 1299,
+                  "weight": 1000,
+                  "inStock": false,
+                  "reviews": [
+                    {
+                      "id": "2",
+                      "product": {
+                        "upc": "2",
+                        "inStock": false
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "product": {
+            "__typename": "Product",
+            "upc": "2",
+            "name": "Couch",
+            "inStock": false,
+            "shippingEstimate": 0,
+            "weight": 1000,
+            "price": 1299,
+            "reviews": [
+              {
+                "__typename": "Review",
+                "id": "2",
+                "body": "Too expensive.",
+                "author": {
+                  "__typename": "User",
+                  "id": "1",
+                  "name": "Ada Lovelace",
+                  "username": "@ada"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "__queryPlanExperimental": "QueryPlan {\n  Sequence {\n    Fetch(service: \"accounts\") {\n      {\n        me {\n          __typename\n          id\n          name\n          username\n          reviews {\n            __typename\n            id\n            body\n            author {\n              __typename\n              id\n              name\n              username\n              reviews {\n                __typename\n                id\n                body\n                product {\n                  __typename\n                  upc\n                  name\n                  price\n                  weight\n                  reviews {\n                    id\n                    product {\n                      upc\n                      __typename\n                    }\n                  }\n                }\n              }\n            }\n            product {\n              __typename\n              upc\n              name\n              shippingEstimate\n              weight\n              price\n              reviews {\n                __typename\n                id\n                body\n                author {\n                  __typename\n                  id\n                  name\n                  username\n                }\n              }\n            }\n          }\n        }\n      }\n    },\n    Parallel {\n      Flatten(path: \"me.reviews.@.author.reviews.@.product\") {\n        Fetch(service: \"reviews\") {\n          {\n            ... on Product {\n              __typename\n              upc\n            }\n          } =>\n          {\n            ... on Product {\n              inStock\n            }\n          }\n        },\n      },\n      Flatten(path: \"me.reviews.@.author.reviews.@.product.reviews.@.product\") {\n        Fetch(service: \"reviews\") {\n          {\n            ... on Product {\n              __typename\n              upc\n            }\n          } =>\n          {\n            ... on Product {\n              inStock\n            }\n          }\n        },\n      },\n      Flatten(path: \"me.reviews.@.product\") {\n        Fetch(service: \"reviews\") {\n          {\n            ... on Product {\n              __typename\n              upc\n            }\n          } =>\n          {\n            ... on Product {\n              inStock\n            }\n          }\n        },\n      },\n    },\n  },\n}"
+  }
+}
+
+QueryPlan {
+  Sequence {
+    Fetch(service: "accounts") {
+      {
+        me {
+          __typename
+          id
+          name
+          username
+          reviews {
+            __typename
+            id
+            body
+            author {
+              __typename
+              id
+              name
+              username
+              reviews {
+                __typename
+                id
+                body
+                product {
+                  __typename
+                  upc
+                  name
+                  price
+                  weight
+                  reviews {
+                    id
+                    product {
+                      upc
+                      __typename
+                    }
+                  }
+                }
+              }
+            }
+            product {
+              __typename
+              upc
+              name
+              shippingEstimate
+              weight
+              price
+              reviews {
+                __typename
+                id
+                body
+                author {
+                  __typename
+                  id
+                  name
+                  username
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    Parallel {
+      Flatten(path: "me.reviews.@.author.reviews.@.product") {
+        Fetch(service: "reviews") {
+          {
+            ... on Product {
+              __typename
+              upc
+            }
+          } =>
+          {
+            ... on Product {
+              inStock
+            }
+          }
+        },
+      },
+      Flatten(path: "me.reviews.@.author.reviews.@.product.reviews.@.product") {
+        Fetch(service: "reviews") {
+          {
+            ... on Product {
+              __typename
+              upc
+            }
+          } =>
+          {
+            ... on Product {
+              inStock
+            }
+          }
+        },
+      },
+      Flatten(path: "me.reviews.@.product") {
+        Fetch(service: "reviews") {
+          {
+            ... on Product {
+              __typename
+              upc
+            }
+          } =>
+          {
+            ... on Product {
+              inStock
+            }
+          }
+        },
+      },
+    },
+  },
+}
