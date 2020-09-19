@@ -1,0 +1,472 @@
+QueryPlan {
+  Sequence {
+    Fetch(service: "accounts") {
+      {
+        me {
+          id
+          name
+          username
+          __typename
+        }
+      }
+    },
+    Flatten(path: "me") {
+      Fetch(service: "reviews") {
+        {
+          ... on User {
+            __typename
+            id
+          }
+        } =>
+        {
+          ... on User {
+            reviews {
+              id
+              body
+              author {
+                id
+                __typename
+                username
+                reviews {
+                  id
+                  body
+                  product {
+                    __typename
+                    upc
+                  }
+                }
+              }
+              product {
+                upc
+                __typename
+                inStock
+                reviews {
+                  id
+                  body
+                  author {
+                    id
+                    __typename
+                    username
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+    },4`
+    Parallel {
+      Flatten(path: "me.reviews.@.author") {
+        Fetch(service: "accounts") {
+          {
+            ... on User {
+              __typename
+              id
+            }
+          } =>
+          {
+            ... on User {
+              name
+            }
+          }
+        },
+      },
+      Flatten(path: "me.reviews.@.author.reviews.@.product") {
+        Fetch(service: "accounts") {
+          {
+            ... on Product {
+              __typename
+              upc
+            }
+          } =>
+          {
+            ... on Product {
+              name
+              price
+              weight
+            }
+          }
+        },
+      },
+      Sequence {
+        Flatten(path: "me.reviews.@.product") {
+          Fetch(service: "accounts") {
+            {
+              ... on Product {
+                __typename
+                upc
+              }
+            } =>
+            {
+              ... on Product {
+                name
+                __typename
+                upc
+                price
+                weight
+              }
+            }
+          },
+        },
+        Flatten(path: "me.reviews.@.product") {
+          Fetch(service: "reviews") {
+            {
+              ... on Product {
+                __typename
+                upc
+                price
+                weight
+              }
+            } =>
+            {
+              ... on Product {
+                shippingEstimate
+              }
+            }
+          },
+        },
+      },
+      Flatten(path: "me.reviews.@.product.reviews.@.author") {
+        Fetch(service: "accounts") {
+          {
+            ... on User {
+              __typename
+              id
+            }
+          } =>
+          {
+            ... on User {
+              name
+            }
+          }
+        },
+      },
+    },
+  },
+}
+
+                         |--> Accounts
+                         |
+                         |--> Accounts
+Accounts --> Reviews --> |
+                         |--> Accounts --> Reviews
+                         |
+                         |--> Accounts
+
+????
+
+
+
+-----
+QUERY
+-----
+query {
+  me {                    -> Accounts
+    id                    -> Accounts
+    name                  -> Accounts
+    username              -> Accounts
+    reviews {             -> Reviews
+      id                  -> Reviews
+      body                -> Reviews
+      author {            -> Review
+        id                -> Accounts
+        name              -> Accounts
+        username          -> Accounts/ === Reviews
+        reviews {         -> Reviews
+          id              -> Reviews
+          body            -> Reviews [ Leave it Review]
+          product {       -> Reviews
+            name          -> Accounts
+            price         -> Accounts
+            weight        -> Accounts
+          }
+        }
+      }
+      product {           -> Reviews
+        upc               -> Accounts
+        name              -> Accounts
+        inStock           -> Reviews
+        shippingEstimate  -> Reviews
+        weight            -> Accounts
+        price             -> Accounts
+        reviews {         -> Reviews
+          id              -> Reviews
+          body            -> Reviews
+          author {        -> Reviews
+            id            -> Accounts
+            name          -> Accounts
+            username      -> Accounts
+          }
+        }
+      }
+    }
+  }
+}
+
+RESPONSE
+--------
+
+{
+  "data": {
+    "me": {
+      "id": "1",
+      "name": "Ada Lovelace",
+      "username": "@ada",
+      "reviews": [
+        {
+          "id": "1",
+          "body": "Love it!",
+          "author": {
+            "id": "1",
+            "name": "Ada Lovelace",
+            "username": "@ada",
+            "reviews": [
+              {
+                "id": "1",
+                "body": "Love it!",
+                "product": {
+                  "name": "Table",
+                  "price": 899,
+                  "weight": 100
+                }
+              },
+              {
+                "id": "2",
+                "body": "Too expensive.",
+                "product": {
+                  "name": "Couch",
+                  "price": 1299,
+                  "weight": 1000
+                }
+              }
+            ]
+          },
+          "product": {
+            "upc": "1",
+            "name": "Table",
+            "inStock": true,
+            "shippingEstimate": 50,
+            "weight": 100,
+            "price": 899,
+            "reviews": [
+              {
+                "id": "1",
+                "body": "Love it!",
+                "author": {
+                  "id": "1",
+                  "name": "Ada Lovelace",
+                  "username": "@ada"
+                }
+              },
+              {
+                "id": "4",
+                "body": "Prefer something else.",
+                "author": {
+                  "id": "2",
+                  "name": "Alan Turing",
+                  "username": "@complete"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "2",
+          "body": "Too expensive.",
+          "author": {
+            "id": "1",
+            "name": "Ada Lovelace",
+            "username": "@ada",
+            "reviews": [
+              {
+                "id": "1",
+                "body": "Love it!",
+                "product": {
+                  "name": "Table",
+                  "price": 899,
+                  "weight": 100
+                }
+              },
+              {
+                "id": "2",
+                "body": "Too expensive.",
+                "product": {
+                  "name": "Couch",
+                  "price": 1299,
+                  "weight": 1000
+                }
+              }
+            ]
+          },
+          "product": {
+            "upc": "2",
+            "name": "Couch",
+            "inStock": false,
+            "shippingEstimate": 0,
+            "weight": 1000,
+            "price": 1299,
+            "reviews": [
+              {
+                "id": "2",
+                "body": "Too expensive.",
+                "author": {
+                  "id": "1",
+                  "name": "Ada Lovelace",
+                  "username": "@ada"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "__queryPlanExperimental": "QueryPlan {
+  Sequence {
+    Fetch(service: \"accounts\") {
+      {
+        me {
+          id
+          name
+          username
+          __typename
+        }
+      }
+    },
+    Flatten(path: \"me\") {
+      Fetch(service: \"reviews\") {
+        {
+          ... on User {
+            __typename
+            id
+          }
+        } =>
+        {
+          ... on User {
+            reviews {
+              id
+              body
+              author {
+                id
+                __typename
+                username
+                reviews {
+                  id
+                  body
+                  product {
+                    __typename
+                    upc
+                  }
+                }
+              }
+              product {
+                upc
+                __typename
+                inStock
+                reviews {
+                  id
+                  body
+                  author {
+                    id
+                    __typename
+                    username
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+    },
+    Parallel {
+      Flatten(path: \"me.reviews.@.author\") {
+        Fetch(service: \"accounts\") {
+          {
+            ... on User {
+              __typename
+              id
+            }
+          } =>
+          {
+            ... on User {
+              name
+            }
+          }
+        },
+      },
+      Flatten(path: \"me.reviews.@.author.reviews.@.product\") {
+        Fetch(service: \"accounts\") {
+          {
+            ... on Product {
+              __typename
+              upc
+            }
+          } =>
+          {
+            ... on Product {
+              name
+              price
+              weight
+            }
+          }
+        },
+      },
+      Sequence {
+        Flatten(path: \"me.reviews.@.product\") {
+          Fetch(service: \"accounts\") {
+            {
+              ... on Product {
+                __typename
+                upc
+              }
+            } =>
+            {
+              ... on Product {
+                name
+                __typename
+                upc
+                price
+                weight
+              }
+            }
+          },
+        },
+        Flatten(path: \"me.reviews.@.product\") {
+          Fetch(service: \"reviews\") {
+            {
+              ... on Product {
+                __typename
+                upc
+                price
+                weight
+              }
+            } =>
+            {
+              ... on Product {
+                shippingEstimate
+              }
+            }
+          },
+        },
+      },
+      Flatten(path: \"me.reviews.@.product.reviews.@.author\") {
+        Fetch(service: \"accounts\") {
+          {
+            ... on User {
+              __typename
+              id
+            }
+          } =>
+          {
+            ... on User {
+              name
+            }
+          }
+        },
+      },
+    },
+  },
+}"
+  }
+}
