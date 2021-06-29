@@ -18,6 +18,7 @@ const typeDefs = gql`
   extend type Product @key(fields: "upc") {
     upc: String! @external
     reviews: [Review]
+    reviewsForAuthor(authorID: ID!): [Review]
   }
 `;
 
@@ -42,7 +43,12 @@ const resolvers = {
   Product: {
     reviews(product) {
       return reviews.filter(review => review.product.upc === product.upc);
+    },
+
+    reviewsForAuthor(product, author) {
+      return reviews.filter(review => review.product.upc === product.upc && review.authorID === author.authorID);
     }
+
   }
 };
 
