@@ -2,6 +2,7 @@
   "name": "federation-demo",
   "main": "gateway.js",
   "scripts": {
+    "start": "concurrently \"npm:start-service-*\" \"npm:start-gateway\"",
     "start-gateway": "nodemon gateway.js",
     "start-service-accounts": "nodemon services/accounts/index.js",
     "start-service-reviews": "nodemon services/reviews/index.js",
