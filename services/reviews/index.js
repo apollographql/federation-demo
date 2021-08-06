@@ -20,6 +20,10 @@ const typeDefs = gql`
     reviews: [Review]
     reviewsForAuthor(authorID: ID!): [Review]
   }
+  
+  extend type Mutation {
+    createReview(upc: ID!, id: ID!, body: String): Review
+  }
 `;
 
 const resolvers = {
@@ -49,6 +53,16 @@ const resolvers = {
       return reviews.filter(review => review.product.upc === product.upc && review.authorID === author.authorID);
     }
 
+  },
+
+  Mutation: {
+    createReview(p, args) {
+      return {
+        id: args.id,
+        body: args.body,
+        product: { upc: args.upc }
+      };
+    }
   }
 };
 

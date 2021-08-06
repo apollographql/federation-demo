@@ -12,6 +12,10 @@ const typeDefs = gql`
     price: Int
     weight: Int
   }
+  
+  extend type Mutation {
+    createProduct(upc: ID!, name: String): Product
+  }
 `;
 
 const resolvers = {
@@ -23,6 +27,15 @@ const resolvers = {
   Query: {
     topProducts(_, args) {
       return products.slice(0, args.first);
+    }
+  },
+
+  Mutation: {
+    createProduct(_, args) {
+      return {
+        upc: args.upc,
+        name: args.name,
+      };
     }
   }
 };
