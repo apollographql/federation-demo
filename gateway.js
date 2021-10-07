@@ -1,5 +1,6 @@
 const { ApolloServer } = require("apollo-server");
 const { ApolloGateway } = require("@apollo/gateway");
+require("./open-telemetry.js");
 
 const gateway = new ApolloGateway({
   // This entire `serviceList` is optional when running in managed federation

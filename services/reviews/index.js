@@ -1,5 +1,6 @@
 const { ApolloServer, gql } = require("apollo-server");
 const { buildFederatedSchema } = require("@apollo/federation");
+require("./open-telemetry.js");
 
 const typeDefs = gql`
   type Review @key(fields: "id") {

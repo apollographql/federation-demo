@@ -12,12 +12,19 @@
     "postinstall": "lerna bootstrap"
   },
   "devDependencies": {
+    "concurrently": "latest",
     "lerna": "latest",
-    "nodemon": "latest",
-    "concurrently": "latest"
+    "nodemon": "latest"
   },
   "dependencies": {
     "@apollo/gateway": "latest",
+    "@opentelemetry/api": "^1.0.3",
+    "@opentelemetry/core": "^0.22.0",
+    "@opentelemetry/exporter-jaeger": "^1.0.0",
+    "@opentelemetry/instrumentation-express": "^0.22.0",
+    "@opentelemetry/instrumentation-graphql": "^0.22.0",
+    "@opentelemetry/instrumentation-http": "^0.22.0",
+    "@opentelemetry/node": "^0.22.0",
     "apollo-server": "latest",
     "graphql": "latest"
   }
