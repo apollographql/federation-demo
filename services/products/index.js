@@ -1,5 +1,11 @@
-const { ApolloServer, gql } = require("apollo-server");
+const { ApolloServer, gql } = require("apollo-server-express");
 const { buildSubgraphSchema } = require("@apollo/subgraph");
+const { ApolloServerPluginDrainHttpServer } = require("apollo-server-core");
+const rateLimit = require("express-rate-limit");
+const express = require("express");
+const http = require("http");
+const { ApolloServerPluginInlineTraceDisabled } = require("apollo-server-core");
+const cors = require("cors");
 
 const typeDefs = gql`
   extend type Query {
@@ -14,49 +20,80 @@ const typeDefs = gql`
   }
 `;
 
-const resolvers = {
-  Product: {
-    __resolveReference(object) {
-      return products.find(product => product.upc === object.upc);
-    }
-  },
-  Query: {
-    topProducts(_, args) {
-      return products.slice(0, args.first);
-    }
-  }
-};
-
-const server = new ApolloServer({
-  schema: buildSubgraphSchema([
-    {
-      typeDefs,
-      resolvers
-    }
-  ])
-});
-
-server.listen({ port: process.env.PORT || 4003 }).then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
-});
-
 const products = [
   {
     upc: "1",
     name: "Table",
     price: 899,
-    weight: 100
+    weight: 100,
   },
   {
     upc: "2",
     name: "Couch",
     price: 1299,
-    weight: 1000
+    weight: 1000,
   },
   {
     upc: "3",
     name: "Chair",
     price: 54,
-    weight: 50
-  }
+    weight: 50,
+  },
 ];
+
+const resolvers = {
+  Product: {
+    __resolveReference(object) {
+      return products.find((product) => product.upc === object.upc);
+    },
+  },
+  Query: {
+    topProducts(_, args) {
+      return products.slice(0, args.first);
+    },
+  },
+};
+
+async function startApolloServer(typeDefs, resolvers) {
+  // Required logic for integrating with Express
+  const app = express();
+
+  const limiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 1000, // limit each IP to 1000 requests per windowMs
+  });
+
+  app.use(cors());
+  app.use(limiter);
+
+  const httpServer = http.createServer(app);
+
+  const server = new ApolloServer({
+    schema: buildSubgraphSchema([
+      {
+        typeDefs,
+        resolvers,
+      },
+    ]),
+    plugins: [
+      ApolloServerPluginInlineTraceDisabled(),
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+    ],
+  });
+
+  await server.start();
+  server.applyMiddleware({
+    app,
+    path: "/",
+  });
+
+  // Modified server startup
+  const port = process.env.PORT || 4003;
+
+  await new Promise((resolve) => httpServer.listen({ port }, resolve));
+  console.log(
+    `🚀 Products Server ready at http://localhost:${port}${server.graphqlPath}`
+  );
+}
+
+startApolloServer(typeDefs, resolvers);

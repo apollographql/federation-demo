@@ -1,5 +1,11 @@
-const { ApolloServer, gql } = require("apollo-server");
+const { ApolloServer, gql } = require("apollo-server-express");
 const { buildSubgraphSchema } = require("@apollo/subgraph");
+const { ApolloServerPluginDrainHttpServer } = require("apollo-server-core");
+const rateLimit = require("express-rate-limit");
+const express = require("express");
+const http = require("http");
+const { ApolloServerPluginInlineTraceDisabled } = require("apollo-server-core");
+const cors = require("cors");
 
 const typeDefs = gql`
   extend type Product @key(fields: "upc") {
@@ -16,7 +22,7 @@ const resolvers = {
     __resolveReference(object) {
       return {
         ...object,
-        ...inventory.find(product => product.upc === object.upc)
+        ...inventory.find((product) => product.upc === object.upc),
       };
     },
     shippingEstimate(object) {
@@ -24,25 +30,56 @@ const resolvers = {
       if (object.price > 1000) return 0;
       // estimate is based on weight
       return object.weight * 0.5;
-    }
-  }
+    },
+  },
 };
-
-const server = new ApolloServer({
-  schema: buildSubgraphSchema([
-    {
-      typeDefs,
-      resolvers
-    }
-  ])
-});
-
-server.listen({ port: process.env.PORT || 4004 }).then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
-});
 
 const inventory = [
   { upc: "1", inStock: true },
   { upc: "2", inStock: false },
-  { upc: "3", inStock: true }
+  { upc: "3", inStock: true },
 ];
+
+async function startApolloServer(typeDefs, resolvers) {
+  // Required logic for integrating with Express
+  const app = express();
+
+  const limiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 1000, // limit each IP to 1000 requests per windowMs
+  });
+
+  app.use(cors());
+  app.use(limiter);
+
+  const httpServer = http.createServer(app);
+
+  const server = new ApolloServer({
+    schema: buildSubgraphSchema([
+      {
+        typeDefs,
+        resolvers,
+      },
+    ]),
+    plugins: [
+      ApolloServerPluginInlineTraceDisabled(),
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+    ],
+  });
+
+  await server.start();
+  server.applyMiddleware({
+    app,
+    path: "/",
+  });
+
+  // Modified server startup
+  const port = process.env.PORT || 4004;
+
+  await new Promise((resolve) => httpServer.listen({ port }, resolve));
+  console.log(
+    `🚀 Inventory Server ready at http://localhost:${port}${server.graphqlPath}`
+  );
+}
+
+startApolloServer(typeDefs, resolvers);
