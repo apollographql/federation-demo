@@ -7,6 +7,8 @@ const http = require("http");
 const { ApolloServerPluginInlineTraceDisabled } = require("apollo-server-core");
 const cors = require("cors");
 
+const rateLimitTreshold = process.env.LIMIT || 5000;
+
 const typeDefs = gql`
   extend type Query {
     topProducts(first: Int = 5): [Product]
@@ -60,7 +62,7 @@ async function startApolloServer(typeDefs, resolvers) {
 
   const limiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 1000, // limit each IP to 1000 requests per windowMs
+    max: rateLimitTreshold,
   });
 
   app.use(cors());
