@@ -33,7 +33,7 @@ setTimeout(() => {
       subscriptions: false,
     });
   
-    server.listen().then(({ url }) => {
+    server.listen({ port: 4100 }).then(({ url }) => {
       console.log(`🚀 Server ready at ${url}`);
     });
   })();
