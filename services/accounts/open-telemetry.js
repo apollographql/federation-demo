@@ -7,6 +7,7 @@ const { SimpleSpanProcessor, ConsoleSpanExporter, BatchSpanProcessor } = require
 const { Resource } = require('@opentelemetry/resources');
 const { GraphQLInstrumentation } = require ('@opentelemetry/instrumentation-graphql');
 const { JaegerExporter } = require ('@opentelemetry/exporter-jaeger');
+const { JaegerPropagator } = require("@opentelemetry/propagator-jaeger");
 
 // Register server-related instrumentation
 registerInstrumentations({
@@ -37,6 +38,7 @@ const options = {
 }
 const exporter = new JaegerExporter(options);
 provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+provider.register({ propagator: new JaegerPropagator() })
 
 // Register the provider to begin tracing
 provider.register();
