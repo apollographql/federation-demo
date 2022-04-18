@@ -2,11 +2,12 @@
 const { HttpInstrumentation } = require ('@opentelemetry/instrumentation-http');
 const { ExpressInstrumentation } = require ('@opentelemetry/instrumentation-express');
 const { registerInstrumentations } = require('@opentelemetry/instrumentation');
-const { NodeTracerProvider } = require("@opentelemetry/node");
-const { SimpleSpanProcessor, ConsoleSpanExporter, BatchSpanProcessor } = require ("@opentelemetry/tracing");
+const { NodeTracerProvider } = require("@opentelemetry/sdk-trace-node");
+const { SimpleSpanProcessor, ConsoleSpanExporter, BatchSpanProcessor } = require ("@opentelemetry/sdk-trace-base");
 const { Resource } = require('@opentelemetry/resources');
 const { GraphQLInstrumentation } = require ('@opentelemetry/instrumentation-graphql');
 const { JaegerExporter } = require ('@opentelemetry/exporter-jaeger');
+const { JaegerPropagator } = require('@opentelemetry/propagator-jaeger');
 
 // Register server-related instrumentation
 registerInstrumentations({
@@ -24,6 +25,10 @@ const provider = new NodeTracerProvider({
     // Replace with any string to identify this service in your system
     "service.name": "products",
   })),
+});
+
+provider.register({
+  propagator: new JaegerPropagator()
 });
 
 const options = {

@@ -1,6 +1,6 @@
+require("./open-telemetry.js");
 const { ApolloServer, gql } = require("apollo-server");
 const { buildFederatedSchema } = require("@apollo/federation");
-require("./open-telemetry.js");
 
 const typeDefs = gql`
   extend type Product @key(fields: "upc") {
