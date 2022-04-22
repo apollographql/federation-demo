@@ -41,7 +41,9 @@ const options = {
   maxPacketSize: 65000 // optional
 }
 const exporter = new JaegerExporter(options);
-provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+provider.addSpanProcessor(new BatchSpanProcessor(exporter, {
+  scheduledDelayMillis: 100
+}));
 
 // Register the provider to begin tracing
 provider.register();
