@@ -7,4 +7,6 @@ do
    flyctl deploy
    popd
 done
+pushd fly-gateway
 flyctl deploy
+popd
