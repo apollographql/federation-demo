@@ -1,0 +1,33 @@
+{
+  "name": "federation-demo",
+  "main": "gateway.js",
+  "scripts": {
+    "start": "node gateway.js",
+    "start-gateway": "nodemon gateway.js",
+    "start-service-accounts": "nodemon services/accounts/index.js",
+    "start-service-reviews": "nodemon services/reviews/index.js",
+    "start-service-products": "nodemon services/products/index.js",
+    "start-service-inventory": "nodemon services/inventory/index.js",
+    "start-services": "concurrently \"npm:start-service-*\"",
+    "postinstall": "lerna bootstrap"
+  },
+  "devDependencies": {
+    "concurrently": "latest",
+    "lerna": "latest",
+    "nodemon": "latest"
+  },
+  "dependencies": {
+    "@apollo/gateway": "2.0.2",
+    "apollo-server": "3.7.0",
+    "graphql": "^16.5.0",
+    "@opentelemetry/api": "^1.0.4",
+    "@opentelemetry/sdk-node": "^0.27.0",
+    "@opentelemetry/exporter-jaeger": "^1.0.1",
+    "@opentelemetry/propagator-jaeger": "^1.0.1",
+    "@opentelemetry/instrumentation-express": "^0.28.0",
+    "@opentelemetry/instrumentation-graphql": "^0.27.4",
+    "@opentelemetry/instrumentation-http": "^0.27.0",
+    "@opentelemetry/sdk-trace-node": "^1.0.1",
+    "@opentelemetry/resources": "^1.0.1"
+  }
+}
