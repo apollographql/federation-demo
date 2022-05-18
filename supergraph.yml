@@ -1,0 +1,18 @@
+subgraphs:
+  accounts:
+    routing_url: https://accounts.demo.starstuff.dev
+    schema:
+      subgraph_url: http://localhost:4001
+  reviews:
+    routing_url: https://reviews.demo.starstuff.dev
+    schema:
+      subgraph_url: http://localhost:4002
+  products:
+    routing_url: https://products.demo.starstuff.dev
+    schema:
+      subgraph_url: http://localhost:4003
+  inventory:
+    routing_url: https://inventory.demo.starstuff.dev
+    schema:
+      subgraph_url: http://localhost:4004
+federation_version: 1
