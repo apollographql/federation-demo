@@ -11,6 +11,8 @@ const cors = require("cors");
 const rateLimitTreshold = process.env.LIMIT || 5000;
 
 const typeDefs = gql`
+  directive @tag(name: String!) repeatable on FIELD_DEFINITION | INTERFACE | OBJECT | UNION
+
   type Review @key(fields: "id") {
     id: ID!
     body: String

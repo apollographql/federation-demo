@@ -11,6 +11,8 @@ const cors = require("cors");
 const rateLimitTreshold = process.env.LIMIT || 5000;
 
 const typeDefs = gql`
+  directive @tag(name: String!) repeatable on FIELD_DEFINITION | INTERFACE | OBJECT | UNION
+
   extend type Query {
     topProducts(first: Int = 5): [Product]
   }
