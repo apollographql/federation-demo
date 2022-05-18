@@ -10,7 +10,7 @@ processes = []
   builder = "heroku/buildpacks:20"
 
 [env]
-  PORT = "4000"
+  PORT = "4100"
 
 [experimental]
   allowed_public_ports = []
@@ -18,7 +18,7 @@ processes = []
 
 [[services]]
   http_checks = []
-  internal_port = 4000
+  internal_port = 4100
   processes = ["app"]
   protocol = "tcp"
   script_checks = []
