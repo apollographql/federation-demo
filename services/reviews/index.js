@@ -5,7 +5,6 @@ const { ApolloServerPluginDrainHttpServer } = require("apollo-server-core");
 const rateLimit = require("express-rate-limit");
 const express = require("express");
 const http = require("http");
-const { ApolloServerPluginInlineTraceDisabled } = require("apollo-server-core");
 const cors = require("cors");
 
 const rateLimitTreshold = process.env.LIMIT || 5000;
@@ -130,7 +129,6 @@ async function startApolloServer(typeDefs, resolvers) {
       },
     ]),
     plugins: [
-      ApolloServerPluginInlineTraceDisabled(),
       ApolloServerPluginDrainHttpServer({ httpServer }),
     ],
   });
