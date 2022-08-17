@@ -3,6 +3,9 @@
   "scripts": {
     "start": "node index.js"
   },
+  "engines": {
+    "node": "16.x"
+  },
   "dependencies": {
     "@apollo/subgraph": "^2.0.2",
     "apollo-server-core": "^3.7.0",
