@@ -2,8 +2,8 @@ const { ApolloServer } = require("apollo-server");
 const { ApolloGateway, IntrospectAndCompose } = require("@apollo/gateway");
 
 const supergraphSdl = new IntrospectAndCompose({
-  // This entire `serviceList` is optional when running in managed federation
-  // mode, using Apollo Graph Manager as the source of truth.  In production,
+  // This entire subgraph list is optional when running in managed federation
+  // mode, using Apollo Studio as the source of truth.  In production,
   // using a single source of truth to compose a schema is recommended and
   // prevents composition failures at runtime using schema validation using
   // real usage-based metrics.
