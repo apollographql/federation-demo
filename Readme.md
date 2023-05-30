@@ -32,7 +32,9 @@ This will start up the gateway and serve it at http://localhost:4000
 
 ### What is this?
 
-This demo showcases four partial schemas running as federated microservices. Each of these schemas can be accessed on their own and form a partial shape of an overall schema. The gateway fetches the service capabilities from the running services to create an overall composed schema which can be queried. 
+This demo showcases four partial schemas running as federated microservices. Each of these schemas can be accessed on their own and form a partial shape of an overall schema. The gateway fetches the service capabilities from the running services to create an overall composed schema which can be queried.
+
+If you are interested in running your local graphQL service-list without running them as individual microservices, you can compose them inside the gateway and serve it, as shown in this [demo](https://github.com/rajeshdavidbabu/federation-demo-local-services).
 
 To see the query plan when running queries against the gateway, click on the `Query Plan` tab in the bottom right hand corner of [GraphQL Playground](http://localhost:4000)
 
