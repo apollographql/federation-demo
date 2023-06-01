@@ -24,7 +24,8 @@ const typeDefs = gql`
 const resolvers = {
   Review: {
     author(review) {
-      return { __typename: "User", id: review.authorID };
+      const found = reviews.find(r => r.id === review.id);
+      return found ? { __typename: "User", id: found.authorID } : null;
     }
   },
   User: {
